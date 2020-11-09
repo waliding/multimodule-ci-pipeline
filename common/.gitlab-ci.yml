@@ -1,0 +1,6 @@
+.common-module:
+  variables:
+    MODULE: "common"
+  only:
+    changes:
+    - "common/**/*"

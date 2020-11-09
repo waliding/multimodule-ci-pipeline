@@ -1,0 +1,6 @@
+.healer-module:
+  variables:
+    MODULE: "healer"
+  only:
+    changes:
+    - "healer/**/*"

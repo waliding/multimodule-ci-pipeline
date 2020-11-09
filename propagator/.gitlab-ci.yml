@@ -1,0 +1,6 @@
+.propagator-module:
+  variables:
+    MODULE: "propagator"
+  only:
+    changes:
+    - "propagator/**/*"

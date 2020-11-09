@@ -1,0 +1,71 @@
+image: maven:3-jdk-8
+
+stages:
+- build
+- test
+
+variables:
+  MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository"
+  MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version"
+  CACHE_KEY: $CI_COMMIT_REF_SLUG
+
+
+cache:
+  key: $CACHE_KEY
+  paths:
+   - .m2/repository
+   - .sbt
+
+include:
+  - local: common/.gitlab-ci.yml
+  - local: healer/.gitlab-ci.yml
+  - local: propagator/.gitlab-ci.yml
+
+
+.test-module:
+  stage: test
+  script:
+   - echo "Testing $MODULE"
+   - mvn $MAVEN_CLI_OPTS -pl $MODULE test --also-make
+
+.build-module:
+  stage: build
+  script:
+  - echo "Building $MODULE"
+  - mvn -pl $MODULE clean compile --also-make
+  artifacts:
+    expire_in: 10 min
+    paths:
+    - "*/target"
+
+# BUILD JOBS
+build-common-module:
+  extends:
+  - .common-module
+  - .build-module
+
+build-healer-module:
+  extends:
+  - .healer-module
+  - .build-module
+
+build-propagator-module:
+  extends:
+  - .propagator-module
+  - .build-module
+
+# TEST JOBS
+test-common-module:
+  extends:
+  - .common-module
+  - .test-module
+
+test-healer-module:
+  extends:
+    - .healer-module
+    - .test-module
+
+test-propagator-module:
+  extends:
+   - .propagator-module
+   - .test-module

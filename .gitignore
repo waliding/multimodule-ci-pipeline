@@ -1,0 +1,5 @@
+.idea/
+.sbt/
+*.iml
+*/target
+target/*
